@@ -19,15 +19,23 @@ summarizeBtn.addEventListener("click", () => {
 
     loader.style.display = "block";
     btnText.style.visibility = "hidden";
+    summaryOutput.innerText = "Generating summary...";
 
-    fetch("http://127.0.0.1:5000/summarize", {
+    fetch("/summarize", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json" 
+        },
         body: JSON.stringify({ text })
     })
-    .then(res => res.json())
+    .then(res => {
+        if (!res.ok) {
+            throw new Error("Server error");
+        }
+        return res.json();
+    })
     .then(data => {
-        summaryOutput.innerText = data.summary;
+        summaryOutput.innerText = data.summary || "No summary generated.";
     })
     .catch(() => {
         summaryOutput.innerText = "❌ Error connecting to server.";
